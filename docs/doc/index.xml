@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docs | GPS Italy Documentation</title>
+    <link>https://redhat-italy.github.io/gps-doc/doc/</link>
+      <atom:link href="https://redhat-italy.github.io/gps-doc/doc/index.xml" rel="self" type="application/rss+xml" />
+    <description>Docs</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><lastBuildDate>Tue, 28 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
+      <title>Docs</title>
+      <link>https://redhat-italy.github.io/gps-doc/doc/</link>
+    </image>
+    
+    <item>
+      <title>How to setup OCS</title>
+      <link>https://redhat-italy.github.io/gps-doc/doc/ocs/</link>
+      <pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>https://redhat-italy.github.io/gps-doc/doc/ocs/</guid>
+      <description>&lt;p&gt;Official RedHat documentation 
+&lt;a href=&#34;https://access.redhat.com/products/red-hat-openshift-container-storage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

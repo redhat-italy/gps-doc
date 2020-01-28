@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.7.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Andrea Spagnolo">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="OCS 4.2 in OCP 4.2.14 - UPI installation in RHV.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/gps-doc/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/gps-doc/css/academic.css">
+
+  
+
+
+
+
+  
+
+
+  
+
+  <link rel="manifest" href="/gps-doc/index.webmanifest">
+  <link rel="icon" type="image/png" href="/gps-doc/images/icon_hu2b705d8b2a602ba15c3014fc1c1319f1_32717_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/gps-doc/images/icon_hu2b705d8b2a602ba15c3014fc1c1319f1_32717_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/">
+
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="GPS Italy Documentation">
+  <meta property="og:url" content="https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/">
+  <meta property="og:title" content="OCS 4.2 in OCP 4.2.14 - UPI installation in RHV | GPS Italy Documentation">
+  <meta property="og:description" content="OCS 4.2 in OCP 4.2.14 - UPI installation in RHV."><meta property="og:image" content="img/map[gravatar:%!s(bool=true) shape:circle]">
+  <meta property="twitter:image" content="img/map[gravatar:%!s(bool=true) shape:circle]"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-01-28T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2020-01-28T06:40:30&#43;01:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/"
+  },
+  "headline": "OCS 4.2 in OCP 4.2.14 - UPI installation in RHV",
+  
+  "datePublished": "2020-01-28T00:00:00Z",
+  "dateModified": "2020-01-28T06:40:30+01:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Andrea Spagnolo"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "GPS Italy Documentation",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "img/https://redhat-italy.github.io/gps-doc/"
+    }
+  },
+  "description": "OCS 4.2 in OCP 4.2.14 - UPI installation in RHV."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>OCS 4.2 in OCP 4.2.14 - UPI installation in RHV | GPS Italy Documentation</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/gps-doc/">GPS Italy Documentation</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/gps-doc/">GPS Italy Documentation</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/gps-doc/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/gps-doc/#docs"><span>Docs</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item">
+        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>OCS 4.2 in OCP 4.2.14 - UPI installation in RHV</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  
+  <span><a href="/gps-doc/authors/spagno/">Andrea Spagnolo</a></span>
+
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Jan 28, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    13 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/gps-doc/categories/ocs/">ocs</a></span>
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <p>When OCS 4.2 GA was released days ago, I was thrilled to finally test and deploy it in my lab. I read the documentation and saw that only vSphere and AWS installations are currently supported. My lab is installed in an RHV environment following the UPI Bare Metal documentation so, in the beginning, I was a bit disappointed. I realized that it could be an interesting challenge to find a different way to use it and, well, I found it during my day by day late night fun. <strong>All the following procedures are unsupported</strong>.</p>
+<h2>Table of Contents</h2>
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#issues">Issues</a></li>
+    <li><a href="#use-case-scenario">Use case scenario</a></li>
+    <li><a href="#challenges">Challenges</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#procedures">Procedures</a></li>
+    <li><a href="#other-scenario">Other Scenario</a></li>
+    <li><a href="#limits-and-requests">Limits and Requests</a></li>
+    <li><a href="#conclusions">Conclusions</a></li>
+    <li><a href="#updates">UPDATES</a></li>
+  </ul>
+</nav>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>An OCP 4.2.x cluster installed (the current latest version is 4.2.14)</li>
+<li>The possibility to create new local disks inside the VMs (if you are using a virtualized environment) or servers with disks that can be used</li>
+</ul>
+<h2 id="issues">Issues</h2>
+<p>The official OCS 4.2 installation in vSphere requires a minimum of 3 nodes which use 2TB volume each (a PVC using the default &ldquo;thin&rdquo; storage class) for the OSD volumes + 10GB for each mon POD (3 in total using always a PVC). It also requires 16 CPU and 64GB RAM for node.</p>
+<h2 id="use-case-scenario">Use case scenario</h2>
+<ul>
+<li>bare-metal installations</li>
+<li>vSphere cluster
+<ul>
+<li>without a shared datastore</li>
+<li>you don&rsquo;t want to use the vSphere dynamic provisioner</li>
+<li>without enough space in the datastore</li>
+<li>without enough RAM or CPU</li>
+</ul>
+</li>
+<li>other virtualized installation (for example RHV which is the one used for this article)</li>
+</ul>
+<h2 id="challenges">Challenges</h2>
+<ul>
+<li>create a PVC using local disks</li>
+<li>change the default 2TB volumes size</li>
+<li>define a different StorageClass (without using a default one) for the mon PODs and the OSD volumes</li>
+<li>define different limits and requests per component</li>
+</ul>
+<h2 id="solutions">Solutions</h2>
+<ul>
+<li>use the local storage operator</li>
+<li>create the ocs-storagecluster resource using a YAML file instead of the new interface. That means also add the labels to the worker nodes that are going to be used by OCS</li>
+</ul>
+<h2 id="procedures">Procedures</h2>
+<p>Add the disks in the VMs. Add 2 disks for each node. 10GB disk for mon POD and 100GB disk for the OSD volume
+<img src="images/image01.png" alt="Create 10GB disk">
+<img src="images/image02.png" alt="Create 100GB disk">
+Repeat for the other 2 nodes</p>
+<p><strong>The disks MUST be in the same order and have the same device name in all the nodes. For example, /dev/sdb MUST be the 10GB disk and /dev/sdc the 100GB disk in all the nodes.</strong></p>
+<pre><code>[root@utility ~]# for i in {1..3} ; do ssh core@worker-${i}.ocp42.ssa.mbu.labs.redhat.com lsblk | egrep &quot;^sdb.*|sdc.*$&quot; ; done
+sdb      8:16   0   10G  0 disk
+sdc      8:32   0  100G  0 disk
+sdb      8:16   0   10G  0 disk
+sdc      8:32   0  100G  0 disk
+sdb      8:16   0   10G  0 disk
+sdc      8:32   0  100G  0 disk
+[root@utility ~]#
+</code></pre>
+<p>Install the Local Storage Operator. 
+<a href="https://docs.openshift.com/container-platform/4.2/storage/persistent-storage/persistent-storage-local.html#local-storage-install_persistent-storage-local" target="_blank" rel="noopener">Here</a>
+ the official documentation</p>
+<p>Create the namespace</p>
+<pre><code>[root@utility ~]# oc new-project local-storage‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Then install the operator from the OperatorHub
+<img src="images/image03.png" alt="LSO Operator">
+<img src="images/image04.png" alt="Subscribe"></p>
+<p>Wait for the operator POD up&amp;running</p>
+<pre><code>[root@utility ~]# oc get pod -n local-storage
+NAME                                     READY   STATUS    RESTARTS   AGE
+local-storage-operator-ccbb59b45-nn7ww   1/1     Running   0          57s
+[root@utility ~]#
+</code></pre>
+<p>The Local Storage Operator works using the devices as reference. The LocalVolume resource scans the nodes which match the selector and creates a StorageClass for the device.</p>
+<p><strong>Do not use different StorageClass names for the same device.</strong></p>
+<p>We need the <strong>Filesystem</strong> type for these volumes. Prepare the LocalVolume YAML file to create the resource for the mon PODs which use /dev/sdb</p>
+<pre><code>[root@utility ~]# cat &lt;&lt;EOF &gt; local-storage-filesystem.yaml
+apiVersion: &quot;local.storage.openshift.io/v1&quot;
+kind: &quot;LocalVolume&quot;
+metadata:
+  name: &quot;local-disks-fs&quot;
+  namespace: &quot;local-storage&quot;
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+    - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker-1.ocp42.ssa.mbu.labs.redhat.com
+          - worker-2.ocp42.ssa.mbu.labs.redhat.com
+          - worker-3.ocp42.ssa.mbu.labs.redhat.com
+  storageClassDevices:
+    - storageClassName: &quot;local-sc&quot;
+      volumeMode: Filesystem
+      devicePaths:
+        - /dev/sdb
+EOF
+</code></pre>
+<p>Then create the resource</p>
+<pre><code>[root@utility ~]# oc create -f local-storage-filesystem.yaml
+localvolume.local.storage.openshift.io/local-disks-fs created
+[root@utility ~]#‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Check if all the PODs are up&amp;running and if the StorageClass and the PVs exist</p>
+<pre><code>[root@utility ~]# oc get pod -n local-storage
+NAME                                     READY   STATUS    RESTARTS   AGE
+local-disks-fs-local-diskmaker-2bqw4     1/1     Running   0          106s
+local-disks-fs-local-diskmaker-8w9rz     1/1     Running   0          106s
+local-disks-fs-local-diskmaker-khhm5     1/1     Running   0          106s
+local-disks-fs-local-provisioner-g5dgv   1/1     Running   0          106s
+local-disks-fs-local-provisioner-hkj69   1/1     Running   0          106s
+local-disks-fs-local-provisioner-vhpj8   1/1     Running   0          106s
+local-storage-operator-ccbb59b45-nn7ww   1/1     Running   0          15m
+[root@utility ~]# oc get sc
+NAME       PROVISIONER                    AGE
+local-sc   kubernetes.io/no-provisioner   109s
+[root@utility ~]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+local-pv-68faed78   10Gi       RWO            Delete           Available           local-sc                84s
+local-pv-780afdd6   10Gi       RWO            Delete           Available           local-sc                83s
+local-pv-b640422f   10Gi       RWO            Delete           Available           local-sc                9s
+[root@utility ~]#
+</code></pre>
+<p>The PVs were created.</p>
+<p>Prepare the LocalVolume YAML file to create the resource for the OSD volumes which use /dev/sdc</p>
+<p>We need the <strong>Block</strong> type for these volumes.</p>
+<pre><code>[root@utility ~]# cat &lt;&lt;EOF &gt; local-storage-block.yaml
+apiVersion: &quot;local.storage.openshift.io/v1&quot;
+kind: &quot;LocalVolume&quot;
+metadata:
+  name: &quot;local-disks&quot;
+  namespace: &quot;local-storage&quot;
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+    - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker-1.ocp42.ssa.mbu.labs.redhat.com
+          - worker-2.ocp42.ssa.mbu.labs.redhat.com
+          - worker-3.ocp42.ssa.mbu.labs.redhat.com
+  storageClassDevices:
+    - storageClassName: &quot;localblock-sc&quot;
+      volumeMode: Block
+      devicePaths:
+        - /dev/sdc
+EOF
+</code></pre>
+<p>Then create the resource</p>
+<pre><code>[root@utility ~]# oc create -f local-storage-block.yaml
+localvolume.local.storage.openshift.io/local-disks created
+[root@utility ~]#
+</code></pre>
+<p>Check if all the PODs are up&amp;running and if the StorageClass and the PVs exist</p>
+<pre><code>[root@utility ~]# oc get pod -n local-storage
+NAME                                     READY   STATUS    RESTARTS   AGE
+local-disks-fs-local-diskmaker-2bqw4     1/1     Running   0          6m33s
+local-disks-fs-local-diskmaker-8w9rz     1/1     Running   0          6m33s
+local-disks-fs-local-diskmaker-khhm5     1/1     Running   0          6m33s
+local-disks-fs-local-provisioner-g5dgv   1/1     Running   0          6m33s
+local-disks-fs-local-provisioner-hkj69   1/1     Running   0          6m33s
+local-disks-fs-local-provisioner-vhpj8   1/1     Running   0          6m33s
+local-disks-local-diskmaker-6qpfx        1/1     Running   0          22s
+local-disks-local-diskmaker-pw5ql        1/1     Running   0          22s
+local-disks-local-diskmaker-rc5hr        1/1     Running   0          22s
+local-disks-local-provisioner-9qprp      1/1     Running   0          22s
+local-disks-local-provisioner-kkkcm      1/1     Running   0          22s
+local-disks-local-provisioner-kxbnn      1/1     Running   0          22s
+local-storage-operator-ccbb59b45-nn7ww   1/1     Running   0          19m
+[root@utility ~]# oc get sc
+NAME            PROVISIONER                    AGE
+local-sc        kubernetes.io/no-provisioner   6m36s
+localblock-sc   kubernetes.io/no-provisioner   25s
+[root@utility ~]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+local-pv-5c4e718c   100Gi      RWO            Delete           Available           localblock-sc            10s
+local-pv-68faed78   10Gi       RWO            Delete           Available           local-sc                 6m13s
+local-pv-6a58375e   100Gi      RWO            Delete           Available           localblock-sc            10s
+local-pv-780afdd6   10Gi       RWO            Delete           Available           local-sc                 6m12s
+local-pv-b640422f   10Gi       RWO            Delete           Available           local-sc                 4m58s
+local-pv-d6db37fd   100Gi      RWO            Delete           Available           localblock-sc            5s
+[root@utility ~]#
+</code></pre>
+<p>All the PVs were created.</p>
+<p>Install OCS 4.2. 
+<a href="https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.2/" target="_blank" rel="noopener">Here</a>
+ the official documentation</p>
+<p>Create the namespace &ldquo;<strong>openshift-storage</strong>&rdquo;</p>
+<pre><code>[root@utility ~]# cat &lt;&lt;EOF &gt; ocs-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-storage
+  labels:
+    openshift.io/cluster-monitoring: &quot;true&quot;
+EOF
+[root@utility ~]# oc create -f ocs-namespace.yaml
+namespace/openshift-storage created
+[root@utility ~]#
+</code></pre>
+<p>Add the labels to the workers</p>
+<pre><code>oc label node worker-1.ocp42.ssa.mbu.labs.redhat.com &quot;cluster.ocs.openshift.io/openshift-storage=&quot; --overwrite
+oc label node worker-1.ocp42.ssa.mbu.labs.redhat.com &quot;topology.rook.io/rack=rack0&quot; --overwrite
+oc label node worker-2.ocp42.ssa.mbu.labs.redhat.com &quot;cluster.ocs.openshift.io/openshift-storage=&quot; --overwrite
+oc label node worker-2.ocp42.ssa.mbu.labs.redhat.com &quot;topology.rook.io/rack=rack1&quot; --overwrite
+oc label node worker-3.ocp42.ssa.mbu.labs.redhat.com &quot;cluster.ocs.openshift.io/openshift-storage=&quot; --overwrite
+oc label node worker-3.ocp42.ssa.mbu.labs.redhat.com &quot;topology.rook.io/rack=rack3&quot; --overwrite‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Install the operator from the web interface
+<img src="images/image05.png" alt="OCS Operator">
+<img src="images/image06.png" alt="Subscribe"></p>
+<p>Check on the web interface if the operator is <strong>Up to date</strong>
+<img src="images/image07.png" alt="Installed Operators"></p>
+<p>And wait for the PODs up&amp;running</p>
+<pre><code>[root@utility ~]# oc get pod -n openshift-storage
+NAME                                  READY   STATUS    RESTARTS   AGE
+noobaa-operator-85d86479fc-n8vp5      1/1     Running   0          106s
+ocs-operator-65cf57b98b-rk48c         1/1     Running   0          106s
+rook-ceph-operator-59d78cf8bd-4zcsz   1/1     Running   0          106s
+[root@utility ~]#
+</code></pre>
+<p>Create the OCS Cluster Service YAML file</p>
+<pre><code>[root@utility ~]# cat &lt;&lt;EOF &gt; ocs-cluster-service.yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  manageNodes: false
+  monPVCTemplate:
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: 'local-sc'
+      volumeMode: Filesystem
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: 'localblock-sc'
+        volumeMode: Block
+    name: ocs-deviceset
+    placement: {}
+    portable: true
+    replica: 3
+    resources: {}
+EOF
+</code></pre>
+<p>You can notice the &ldquo;<strong>monPVCTemplate</strong>&rdquo; section in which we define the StorageClass &ldquo;local-sc&rdquo; and in the section &ldquo;<strong>storageDeviceSets</strong>&rdquo; the different storage sizes and the StorageClass &ldquo;localblock-sc&rdquo; used by OSD volumes.</p>
+<p>Now we can create the resource</p>
+<pre><code>[root@utility ~]# oc create -f ocs-cluster-service.yaml
+storagecluster.ocs.openshift.io/ocs-storagecluster created
+[root@utility ~]#‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>During the creation of the resources, we can see how the PVCs created are bounded with the Local Storage PVs</p>
+<pre><code>[root@utility ~]# oc get pvc -n openshift-storage
+NAME              STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+rook-ceph-mon-a   Bound    local-pv-68faed78   10Gi       RWO            local-sc       13s
+rook-ceph-mon-b   Bound    local-pv-b640422f   10Gi       RWO            local-sc       8s
+rook-ceph-mon-c   Bound    local-pv-780afdd6   10Gi       RWO            local-sc       3s
+[root@utility ~]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                               STORAGECLASS    REASON   AGE
+local-pv-5c4e718c   100Gi      RWO            Delete           Available                                       localblock-sc            28m
+local-pv-68faed78   10Gi       RWO            Delete           Bound       openshift-storage/rook-ceph-mon-a   local-sc                 34m
+local-pv-6a58375e   100Gi      RWO            Delete           Available                                       localblock-sc            28m
+local-pv-780afdd6   10Gi       RWO            Delete           Bound       openshift-storage/rook-ceph-mon-c   local-sc                 34m
+local-pv-b640422f   10Gi       RWO            Delete           Bound       openshift-storage/rook-ceph-mon-b   local-sc                 33m
+local-pv-d6db37fd   100Gi      RWO            Delete           Available                                       localblock-sc            28m
+[root@utility ~]#
+</code></pre>
+<p>And now we can see the OSD PVCs and the PVs bounded</p>
+<pre><code>[root@utility ~]# oc get pvc -n openshift-storage
+NAME                      STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+ocs-deviceset-0-0-7j2kj   Bound    local-pv-6a58375e   100Gi      RWO            localblock-sc   3s
+ocs-deviceset-1-0-lmd97   Bound    local-pv-d6db37fd   100Gi      RWO            localblock-sc   3s
+ocs-deviceset-2-0-dnfbd   Bound    local-pv-5c4e718c   100Gi      RWO            localblock-sc   3s‍‍‍‍‍
+[root@utility ~]# oc get pv | grep localblock-sc
+local-pv-5c4e718c                          100Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-0-dnfbd   localblock-sc                          31m
+local-pv-6a58375e                          100Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-0-7j2kj   localblock-sc                          31m
+local-pv-d6db37fd                          100Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-0-lmd97   localblock-sc                          31m
+[root@utility ~]#
+</code></pre>
+<p>This is the first PVC created inside the OCS cluster used by <strong>noobaa</strong></p>
+<pre><code>[root@utility ~]# oc get pvc -n openshift-storage
+NAME                      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+db-noobaa-core-0          Bound    pvc-d8dbb86f-3d83-11ea-ac51-001a4a16017d   50Gi       RWO            ocs-storagecluster-ceph-rbd   72s‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Wait for all the PODs up&amp;running</p>
+<pre><code>[root@utility ~]# oc get pod -n openshift-storage
+NAME                                                              READY   STATUS      RESTARTS   AGE
+csi-cephfsplugin-2qkl8                                            3/3     Running     0          5m31s
+csi-cephfsplugin-4pbvl                                            3/3     Running     0          5m31s
+csi-cephfsplugin-j8w82                                            3/3     Running     0          5m31s
+csi-cephfsplugin-provisioner-647cd6996c-6mw9t                     4/4     Running     0          5m31s
+csi-cephfsplugin-provisioner-647cd6996c-pbrxs                     4/4     Running     0          5m31s
+csi-rbdplugin-9nj85                                               3/3     Running     0          5m31s
+csi-rbdplugin-jmnqz                                               3/3     Running     0          5m31s
+csi-rbdplugin-provisioner-6b8ff67dc4-jk5lm                        4/4     Running     0          5m31s
+csi-rbdplugin-provisioner-6b8ff67dc4-rxjhq                        4/4     Running     0          5m31s
+csi-rbdplugin-vrzjq                                               3/3     Running     0          5m31s
+noobaa-core-0                                                     1/2     Running     0          2m34s
+noobaa-operator-85d86479fc-n8vp5                                  1/1     Running     0          13m
+ocs-operator-65cf57b98b-rk48c                                     0/1     Running     0          13m
+rook-ceph-drain-canary-worker-1.ocp42.ssa.mbu.labs.redhat.w2cqv   1/1     Running     0          2m41s
+rook-ceph-drain-canary-worker-2.ocp42.ssa.mbu.labs.redhat.whv6s   1/1     Running     0          2m40s
+rook-ceph-drain-canary-worker-3.ocp42.ssa.mbu.labs.redhat.ll8gj   1/1     Running     0          2m40s
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-d7d64976d8cm7   1/1     Running     0          2m28s
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-864fdf78ppnpm   1/1     Running     0          2m27s
+rook-ceph-mgr-a-5fd6f7578c-wbsb6                                  1/1     Running     0          3m24s
+rook-ceph-mon-a-bffc546c8-vjrfb                                   1/1     Running     0          4m26s
+rook-ceph-mon-b-8499dd679c-6pzm9                                  1/1     Running     0          4m11s
+rook-ceph-mon-c-77cd5dd54-64z52                                   1/1     Running     0          3m46s
+rook-ceph-operator-59d78cf8bd-4zcsz                               1/1     Running     0          13m
+rook-ceph-osd-0-b46fbc7d7-hc2wz                                   1/1     Running     0          2m41s
+rook-ceph-osd-1-648c5dc8d6-prwks                                  1/1     Running     0          2m40s
+rook-ceph-osd-2-546d4d77fb-qb68j                                  1/1     Running     0          2m40s
+rook-ceph-osd-prepare-ocs-deviceset-0-0-7j2kj-s72g4               0/1     Completed   0          2m56s
+rook-ceph-osd-prepare-ocs-deviceset-1-0-lmd97-27chl               0/1     Completed   0          2m56s
+rook-ceph-osd-prepare-ocs-deviceset-2-0-dnfbd-s7z8v               0/1     Completed   0          2m56s
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-d7b4b5b6hnpr   1/1     Running     0          2m12s
+</code></pre>
+<p>Our installation is now complete and OCS fully operative.</p>
+<p>Now we can browse the <strong>noobaa management console</strong> (for now it only works in Chrome) and create a new user to test the S3 object storage
+<img src="images/image08.png" alt="User Page">
+<img src="images/image09.png" alt="New User">
+<img src="images/image10.png" alt="Permission">
+<img src="images/image11.png" alt="Secret Page"></p>
+<p>Get the endpoint for the S3 object server</p>
+<pre><code>[root@utility ~]# oc get route s3 -o jsonpath='{.spec.host}' -n openshift-storage
+s3-openshift-storage.apps.ocp42.ssa.mbu.labs.redhat.com‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Test it with your preferred S3 client (I use Cyberduck in my windows desktop which I&rsquo;m using to write this article)
+<img src="images/image12.png" alt="Cyberduck Login">
+<img src="images/image13.png" alt="List Buckets"></p>
+<p>Create something to check if you can write
+<img src="images/image14.png" alt="New file"></p>
+<p>It works!</p>
+<p>Set the <strong>ocs-storagecluster-cephfs</strong> StorageClass as the default one</p>
+<pre><code>[root@utility ~]# oc patch storageclass ocs-storagecluster-cephfs -p '{&quot;metadata&quot;: {&quot;annotations&quot;:{&quot;storageclass.kubernetes.io/is-default-class&quot;:&quot;true&quot;}}}'
+storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched
+[root@utility ~]#‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Test the <strong>ocs-storagecluster-cephfs</strong> StorageClass adding persistent storage to the registry</p>
+<pre><code> [root@utility ~]# oc edit configs.imageregistry.operator.openshift.io
+storage:
+  pvc:
+    claim:‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+</code></pre>
+<p>Check the PVC created and wait for the new POD up&amp;running</p>
+<pre><code>[root@utility ~]# oc get pvc -n openshift-image-registry
+NAME                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                AGE
+image-registry-storage   Bound    pvc-ba4a07c1-3d86-11ea-ad40-001a4a1601e7   100Gi      RWX            ocs-storagecluster-cephfs   12s
+[root@utility ~]# oc get pod -n openshift-image-registry
+NAME                                               READY   STATUS    RESTARTS   AGE
+cluster-image-registry-operator-655fb7779f-pn7ms   2/2     Running   0          36h
+image-registry-5bdf96556-98jbk                     1/1     Running   0          105s
+node-ca-9gbxg                                      1/1     Running   1          35h
+node-ca-fzcrm                                      1/1     Running   0          35h
+node-ca-gr928                                      1/1     Running   1          35h
+node-ca-jkfzf                                      1/1     Running   1          35h
+node-ca-knlcj                                      1/1     Running   0          35h
+node-ca-mb6zh                                      1/1     Running   0          35h
+[root@utility ~]#
+</code></pre>
+<p>Test it in a new project <strong>test</strong></p>
+<pre><code>[root@utility ~]# oc new-project test
+Now using project &quot;test&quot; on server &quot;https://api.ocp42.ssa.mbu.labs.redhat.com:6443&quot;.
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app django-psql-example
+
+to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+
+    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+
+[root@utility ~]# podman pull alpine
+Trying to pull docker.io/library/alpine...Getting image source signatures
+Copying blob c9b1b535fdd9 doneCopying config e7d92cdc71 doneWriting manifest to image destination
+Storing signaturese7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a
+[root@utility ~]# podman login -u $(oc whoami) -p $(oc whoami -t) $REGISTRY_URL --tls-verify=false
+Login Succeeded!
+[root@utility ~]# podman tag alpine $REGISTRY_URL/test/alpine
+[root@utility ~]# podman push $REGISTRY_URL/test/alpine --tls-verify=false
+Getting image source signatures
+Copying blob 5216338b40a7 done
+Copying config e7d92cdc71 done
+Writing manifest to image destination
+Storing signatures
+[root@utility ~]# oc get is -n test
+NAME     IMAGE REPOSITORY                                                                        TAGS     UPDATED
+alpine   default-route-openshift-image-registry.apps.ocp42.ssa.mbu.labs.redhat.com/test/alpine   latest   3 minutes ago
+[root@utility ~]#
+</code></pre>
+<p>The registry works!</p>
+<h2 id="other-scenario">Other Scenario</h2>
+<p>If your cluster is deployed in vSphere and uses the default &ldquo;<strong>thin</strong>&rdquo; StorageClass but your datastore isn&rsquo;t big enough, you can start from the OCS installation.
+When it comes to creating the OCS Cluster Service, create a YAML file with your desired sizes and without storageClassName (it will use the default one).
+You can also remove the &ldquo;<strong>monPVCTemplate</strong>&rdquo; if you are not interested in changing the storage size.</p>
+<pre><code>[root@utility ~]# cat &lt;&lt;EOF &gt; ocs-cluster-service.yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  manageNodes: false
+  monPVCTemplate:
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: ''
+      volumeMode: Filesystem
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: ''
+        volumeMode: Block
+    name: ocs-deviceset
+    placement: {}
+    portable: true
+    replica: 3
+    resources: {}
+EOF
+</code></pre>
+<h2 id="limits-and-requests">Limits and Requests</h2>
+<p>Limits and Requests, by default, are set like that</p>
+<pre><code>[root@utility ~]# oc describe node worker-1.ocp42.ssa.mbu.labs.redhat.com
+...
+  Namespace           Name                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------           ----                               ------------  ----------  ---------------  -------------  ---
+  openshift-storage   noobaa-core-0                      4 (25%)       4 (25%)     8Gi (12%)        8Gi (12%)      13m
+  openshift-storage   rook-ceph-mgr-a-676d4b4796-54mtk   1 (6%)        1 (6%)      3Gi (4%)         3Gi (4%)       12m
+  openshift-storage   rook-ceph-mon-b-7d7747d8b4-k9txg   1 (6%)        1 (6%)      2Gi (3%)         2Gi (3%)       13m
+  openshift-storage   rook-ceph-osd-1-854847fd4c-482bt   1 (6%)        2 (12%)     4Gi (6%)         8Gi (12%)      12m
+...
+</code></pre>
+<p>We can create our new YAML file to change those settings in the <strong>ocs-storagecluster</strong> StorageCluster resource</p>
+<pre><code>[root@utility ~]# cat &lt;&lt;EOF &gt; ocs-cluster-service-modified.yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  resources:
+    mon:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    mgr:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    noobaa-core:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    noobaa-db:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  manageNodes: false
+  monPVCTemplate:
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: 'local-sc'
+      volumeMode: Filesystem
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: 'localblock-sc'
+        volumeMode: Block
+    name: ocs-deviceset
+    placement: {}
+    portable: true
+    replica: 3
+    resources:
+      limits:
+        cpu: 1
+        memory: 4Gi
+      requests:
+        cpu: 1
+        memory: 4Gi
+EOF
+</code></pre>
+<p>And apply</p>
+<pre><code>[root@utility ~]# oc apply -f ocs-cluster-service-modified.yaml
+Warning: oc apply should be used on resource created by either oc create --save-config or oc apply
+storagecluster.ocs.openshift.io/ocs-storagecluster configured
+</code></pre>
+<p>We have to wait for the operator which reads the new configs and applies them</p>
+<pre><code>[root@utility ~]# oc describe node worker-1.ocp42.ssa.mbu.labs.redhat.com
+...
+  Namespace           Name                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------           ----                               ------------  ----------  ---------------  -------------  ---
+  openshift-storage   noobaa-core-0                      2 (12%)       2 (12%)     2Gi (3%)         2Gi (3%)       23s
+  openshift-storage   rook-ceph-mgr-a-54f87f84fb-pm4rn   1 (6%)        1 (6%)      1Gi (1%)         1Gi (1%)       56s
+  openshift-storage   rook-ceph-mon-b-854f549cd4-bgdb6   1 (6%)        1 (6%)      1Gi (1%)         1Gi (1%)       46s
+  openshift-storage   rook-ceph-osd-1-ff56d545c-p7hvn    1 (6%)        1 (6%)      4Gi (6%)         4Gi (6%)       50s
+...
+</code></pre>
+<p>And now we have our PODs with the new configurations applied.</p>
+<p><strong>The OSD PODs won&rsquo;t start if you choose too low values.</strong></p>
+<p>Sections:</p>
+<ul>
+<li><strong>mon</strong> for <strong>rook-ceph-mon</strong></li>
+<li><strong>mgr</strong> for <strong>rook-ceph-mgr</strong></li>
+<li><strong>noobaa-core</strong> and <strong>noobaa-db</strong> for the 2 containers in the pod <strong>noobaa-core-0</strong></li>
+<li><strong>mds</strong> for <strong>rook-ceph-mds-ocs-storagecluster-cephfilesystem</strong></li>
+<li><strong>rgw</strong> for <strong>rook-ceph-rgw-ocs-storagecluster-cephobjectstore</strong></li>
+<li>the <strong>resources</strong> section in the end for <strong>rook-ceph-osd</strong></li>
+</ul>
+<p><strong>rgw and mds sections work only the first time we create the resource.</strong></p>
+<pre><code>---
+spec:
+  resources:
+    mds:
+      limits:
+        cpu: 2
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 4Gi
+    rgw:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+---
+</code></pre>
+<h2 id="conclusions">Conclusions</h2>
+<p>Now you can enjoy your brand-new OCS 4.2 in OCP 4.2.x<br>
+Things changed if you think about OCS 3.x, for example, the use of the PVCs instead of using directly the disks attached and for now, there are a lot of limitations for sustainability and supportability reasons.<br>
+We will wait for a fully supported installation for these scenarios.</p>
+<h2 id="updates">UPDATES</h2>
+<ul>
+<li>The cluster used to write this article has been updated from 4.2.14 to 4.2.16 and then from 4.2.16 to 4.3.0.</li>
+</ul>
+<p>The current OCS setup is still working
+<img src="images/image15.png" alt="Upgrade"></p>
+<ul>
+<li>Added Requests and Limits configurations.</li>
+</ul>
+
+    </div>
+
+    
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/gps-doc/tags/ocs/">ocs</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/&amp;text=OCS%204.2%20in%20OCP%204.2.14%20-%20UPI%20installation%20in%20RHV" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/&amp;t=OCS%204.2%20in%20OCP%204.2.14%20-%20UPI%20installation%20in%20RHV" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=OCS%204.2%20in%20OCP%204.2.14%20-%20UPI%20installation%20in%20RHV&amp;body=https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/&amp;title=OCS%204.2%20in%20OCP%204.2.14%20-%20UPI%20installation%20in%20RHV" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=OCS%204.2%20in%20OCP%204.2.14%20-%20UPI%20installation%20in%20RHV%20https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/&amp;title=OCS%204.2%20in%20OCP%204.2.14%20-%20UPI%20installation%20in%20RHV" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  <div class="media author-card content-widget-hr">
+    
+      <img class="avatar mr-3 avatar-circle" src="https://s.gravatar.com/avatar/6620eb7df02e82df935e27aed708ebec?s=200')" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="https://redhat-italy.github.io/gps-doc/">Andrea Spagnolo</a></h5>
+      <h6 class="card-subtitle">Senior Cloud Consultant</h6>
+      <p class="card-text">next.</p>
+      <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:spagno@redhat.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/spagno" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+</ul>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/gps-doc/doc/ocs/">How to setup OCS</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.4/mermaid.min.js" integrity="sha256-JEqEejGt4tR35L0a1zodzsV0/PJ6GIf7J4yDtywdrH8=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js" integrity="sha256-1zu+3BnLYV9LdiY85uXMzii3bdrkelyp37e0ZyTAQh0=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/gps-doc/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/gps-doc/js/academic.min.0630fec5958cb075a5a38f042b3ddde6.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

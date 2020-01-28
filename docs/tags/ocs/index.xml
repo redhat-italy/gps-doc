@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ocs | GPS Italy Documentation</title>
+    <link>https://redhat-italy.github.io/gps-doc/tags/ocs/</link>
+      <atom:link href="https://redhat-italy.github.io/gps-doc/tags/ocs/index.xml" rel="self" type="application/rss+xml" />
+    <description>ocs</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><lastBuildDate>Tue, 28 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
+      <title>ocs</title>
+      <link>https://redhat-italy.github.io/gps-doc/tags/ocs/</link>
+    </image>
+    
+    <item>
+      <title>How to setup OCS</title>
+      <link>https://redhat-italy.github.io/gps-doc/doc/ocs/</link>
+      <pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>https://redhat-italy.github.io/gps-doc/doc/ocs/</guid>
+      <description>&lt;p&gt;Official RedHat documentation 
+&lt;a href=&#34;https://access.redhat.com/products/red-hat-openshift-container-storage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>OCS 4.2 in OCP 4.2.14 - UPI installation in RHV</title>
+      <link>https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/</link>
+      <pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>https://redhat-italy.github.io/gps-doc/post/ocs-42-in-ocp-4214-upi-installation-in-rhv/</guid>
+      <description>&lt;p&gt;When OCS 4.2 GA was released days ago, I was thrilled to finally test and deploy it in my lab. I read the documentation and saw that only vSphere and AWS installations are currently supported. My lab is installed in an RHV environment following the UPI Bare Metal documentation so, in the beginning, I was a bit disappointed. I realized that it could be an interesting challenge to find a different way to use it and, well, I found it during my day by day late night fun. &lt;strong&gt;All the following procedures are unsupported&lt;/strong&gt;.&lt;/p&gt;
+&lt;h2&gt;Table of Contents&lt;/h2&gt;
+&lt;nav id=&#34;TableOfContents&#34;&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#issues&#34;&gt;Issues&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#use-case-scenario&#34;&gt;Use case scenario&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#challenges&#34;&gt;Challenges&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#solutions&#34;&gt;Solutions&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#procedures&#34;&gt;Procedures&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#other-scenario&#34;&gt;Other Scenario&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#limits-and-requests&#34;&gt;Limits and Requests&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#conclusions&#34;&gt;Conclusions&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&#34;#updates&#34;&gt;UPDATES&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;An OCP 4.2.x cluster installed (the current latest version is 4.2.14)&lt;/li&gt;
+&lt;li&gt;The possibility to create new local disks inside the VMs (if you are using a virtualized environment) or servers with disks that can be used&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;issues&#34;&gt;Issues&lt;/h2&gt;
+&lt;p&gt;The official OCS 4.2 installation in vSphere requires a minimum of 3 nodes which use 2TB volume each (a PVC using the default &amp;ldquo;thin&amp;rdquo; storage class) for the OSD volumes + 10GB for each mon POD (3 in total using always a PVC). It also requires 16 CPU and 64GB RAM for node.&lt;/p&gt;
+&lt;h2 id=&#34;use-case-scenario&#34;&gt;Use case scenario&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;bare-metal installations&lt;/li&gt;
+&lt;li&gt;vSphere cluster
+&lt;ul&gt;
+&lt;li&gt;without a shared datastore&lt;/li&gt;
+&lt;li&gt;you don&amp;rsquo;t want to use the vSphere dynamic provisioner&lt;/li&gt;
+&lt;li&gt;without enough space in the datastore&lt;/li&gt;
+&lt;li&gt;without enough RAM or CPU&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;other virtualized installation (for example RHV which is the one used for this article)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;challenges&#34;&gt;Challenges&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;create a PVC using local disks&lt;/li&gt;
+&lt;li&gt;change the default 2TB volumes size&lt;/li&gt;
+&lt;li&gt;define a different StorageClass (without using a default one) for the mon PODs and the OSD volumes&lt;/li&gt;
+&lt;li&gt;define different limits and requests per component&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;solutions&#34;&gt;Solutions&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;use the local storage operator&lt;/li&gt;
+&lt;li&gt;create the ocs-storagecluster resource using a YAML file instead of the new interface. That means also add the labels to the worker nodes that are going to be used by OCS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;procedures&#34;&gt;Procedures&lt;/h2&gt;
+&lt;p&gt;Add the disks in the VMs. Add 2 disks for each node. 10GB disk for mon POD and 100GB disk for the OSD volume
+&lt;img src=&#34;images/image01.png&#34; alt=&#34;Create 10GB disk&#34;&gt;
+&lt;img src=&#34;images/image02.png&#34; alt=&#34;Create 100GB disk&#34;&gt;
+Repeat for the other 2 nodes&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The disks MUST be in the same order and have the same device name in all the nodes. For example, /dev/sdb MUST be the 10GB disk and /dev/sdc the 100GB disk in all the nodes.&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# for i in {1..3} ; do ssh core@worker-${i}.ocp42.ssa.mbu.labs.redhat.com lsblk | egrep &amp;quot;^sdb.*|sdc.*$&amp;quot; ; done
+sdb      8:16   0   10G  0 disk
+sdc      8:32   0  100G  0 disk
+sdb      8:16   0   10G  0 disk
+sdc      8:32   0  100G  0 disk
+sdb      8:16   0   10G  0 disk
+sdc      8:32   0  100G  0 disk
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Install the Local Storage Operator. 
+&lt;a href=&#34;https://docs.openshift.com/container-platform/4.2/storage/persistent-storage/persistent-storage-local.html#local-storage-install_persistent-storage-local&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&lt;/a&gt;
+ the official documentation&lt;/p&gt;
+&lt;p&gt;Create the namespace&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc new-project local-storage‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then install the operator from the OperatorHub
+&lt;img src=&#34;images/image03.png&#34; alt=&#34;LSO Operator&#34;&gt;
+&lt;img src=&#34;images/image04.png&#34; alt=&#34;Subscribe&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Wait for the operator POD up&amp;amp;running&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pod -n local-storage
+NAME                                     READY   STATUS    RESTARTS   AGE
+local-storage-operator-ccbb59b45-nn7ww   1/1     Running   0          57s
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The Local Storage Operator works using the devices as reference. The LocalVolume resource scans the nodes which match the selector and creates a StorageClass for the device.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Do not use different StorageClass names for the same device.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We need the &lt;strong&gt;Filesystem&lt;/strong&gt; type for these volumes. Prepare the LocalVolume YAML file to create the resource for the mon PODs which use /dev/sdb&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# cat &amp;lt;&amp;lt;EOF &amp;gt; local-storage-filesystem.yaml
+apiVersion: &amp;quot;local.storage.openshift.io/v1&amp;quot;
+kind: &amp;quot;LocalVolume&amp;quot;
+metadata:
+  name: &amp;quot;local-disks-fs&amp;quot;
+  namespace: &amp;quot;local-storage&amp;quot;
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+    - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker-1.ocp42.ssa.mbu.labs.redhat.com
+          - worker-2.ocp42.ssa.mbu.labs.redhat.com
+          - worker-3.ocp42.ssa.mbu.labs.redhat.com
+  storageClassDevices:
+    - storageClassName: &amp;quot;local-sc&amp;quot;
+      volumeMode: Filesystem
+      devicePaths:
+        - /dev/sdb
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then create the resource&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc create -f local-storage-filesystem.yaml
+localvolume.local.storage.openshift.io/local-disks-fs created
+[root@utility ~]#‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Check if all the PODs are up&amp;amp;running and if the StorageClass and the PVs exist&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pod -n local-storage
+NAME                                     READY   STATUS    RESTARTS   AGE
+local-disks-fs-local-diskmaker-2bqw4     1/1     Running   0          106s
+local-disks-fs-local-diskmaker-8w9rz     1/1     Running   0          106s
+local-disks-fs-local-diskmaker-khhm5     1/1     Running   0          106s
+local-disks-fs-local-provisioner-g5dgv   1/1     Running   0          106s
+local-disks-fs-local-provisioner-hkj69   1/1     Running   0          106s
+local-disks-fs-local-provisioner-vhpj8   1/1     Running   0          106s
+local-storage-operator-ccbb59b45-nn7ww   1/1     Running   0          15m
+[root@utility ~]# oc get sc
+NAME       PROVISIONER                    AGE
+local-sc   kubernetes.io/no-provisioner   109s
+[root@utility ~]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE
+local-pv-68faed78   10Gi       RWO            Delete           Available           local-sc                84s
+local-pv-780afdd6   10Gi       RWO            Delete           Available           local-sc                83s
+local-pv-b640422f   10Gi       RWO            Delete           Available           local-sc                9s
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The PVs were created.&lt;/p&gt;
+&lt;p&gt;Prepare the LocalVolume YAML file to create the resource for the OSD volumes which use /dev/sdc&lt;/p&gt;
+&lt;p&gt;We need the &lt;strong&gt;Block&lt;/strong&gt; type for these volumes.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# cat &amp;lt;&amp;lt;EOF &amp;gt; local-storage-block.yaml
+apiVersion: &amp;quot;local.storage.openshift.io/v1&amp;quot;
+kind: &amp;quot;LocalVolume&amp;quot;
+metadata:
+  name: &amp;quot;local-disks&amp;quot;
+  namespace: &amp;quot;local-storage&amp;quot;
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+    - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - worker-1.ocp42.ssa.mbu.labs.redhat.com
+          - worker-2.ocp42.ssa.mbu.labs.redhat.com
+          - worker-3.ocp42.ssa.mbu.labs.redhat.com
+  storageClassDevices:
+    - storageClassName: &amp;quot;localblock-sc&amp;quot;
+      volumeMode: Block
+      devicePaths:
+        - /dev/sdc
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then create the resource&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc create -f local-storage-block.yaml
+localvolume.local.storage.openshift.io/local-disks created
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Check if all the PODs are up&amp;amp;running and if the StorageClass and the PVs exist&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pod -n local-storage
+NAME                                     READY   STATUS    RESTARTS   AGE
+local-disks-fs-local-diskmaker-2bqw4     1/1     Running   0          6m33s
+local-disks-fs-local-diskmaker-8w9rz     1/1     Running   0          6m33s
+local-disks-fs-local-diskmaker-khhm5     1/1     Running   0          6m33s
+local-disks-fs-local-provisioner-g5dgv   1/1     Running   0          6m33s
+local-disks-fs-local-provisioner-hkj69   1/1     Running   0          6m33s
+local-disks-fs-local-provisioner-vhpj8   1/1     Running   0          6m33s
+local-disks-local-diskmaker-6qpfx        1/1     Running   0          22s
+local-disks-local-diskmaker-pw5ql        1/1     Running   0          22s
+local-disks-local-diskmaker-rc5hr        1/1     Running   0          22s
+local-disks-local-provisioner-9qprp      1/1     Running   0          22s
+local-disks-local-provisioner-kkkcm      1/1     Running   0          22s
+local-disks-local-provisioner-kxbnn      1/1     Running   0          22s
+local-storage-operator-ccbb59b45-nn7ww   1/1     Running   0          19m
+[root@utility ~]# oc get sc
+NAME            PROVISIONER                    AGE
+local-sc        kubernetes.io/no-provisioner   6m36s
+localblock-sc   kubernetes.io/no-provisioner   25s
+[root@utility ~]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS    REASON   AGE
+local-pv-5c4e718c   100Gi      RWO            Delete           Available           localblock-sc            10s
+local-pv-68faed78   10Gi       RWO            Delete           Available           local-sc                 6m13s
+local-pv-6a58375e   100Gi      RWO            Delete           Available           localblock-sc            10s
+local-pv-780afdd6   10Gi       RWO            Delete           Available           local-sc                 6m12s
+local-pv-b640422f   10Gi       RWO            Delete           Available           local-sc                 4m58s
+local-pv-d6db37fd   100Gi      RWO            Delete           Available           localblock-sc            5s
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;All the PVs were created.&lt;/p&gt;
+&lt;p&gt;Install OCS 4.2. 
+&lt;a href=&#34;https://access.redhat.com/documentation/en-us/red_hat_openshift_container_storage/4.2/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&lt;/a&gt;
+ the official documentation&lt;/p&gt;
+&lt;p&gt;Create the namespace &amp;ldquo;&lt;strong&gt;openshift-storage&lt;/strong&gt;&amp;rdquo;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# cat &amp;lt;&amp;lt;EOF &amp;gt; ocs-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-storage
+  labels:
+    openshift.io/cluster-monitoring: &amp;quot;true&amp;quot;
+EOF
+[root@utility ~]# oc create -f ocs-namespace.yaml
+namespace/openshift-storage created
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Add the labels to the workers&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;oc label node worker-1.ocp42.ssa.mbu.labs.redhat.com &amp;quot;cluster.ocs.openshift.io/openshift-storage=&amp;quot; --overwrite
+oc label node worker-1.ocp42.ssa.mbu.labs.redhat.com &amp;quot;topology.rook.io/rack=rack0&amp;quot; --overwrite
+oc label node worker-2.ocp42.ssa.mbu.labs.redhat.com &amp;quot;cluster.ocs.openshift.io/openshift-storage=&amp;quot; --overwrite
+oc label node worker-2.ocp42.ssa.mbu.labs.redhat.com &amp;quot;topology.rook.io/rack=rack1&amp;quot; --overwrite
+oc label node worker-3.ocp42.ssa.mbu.labs.redhat.com &amp;quot;cluster.ocs.openshift.io/openshift-storage=&amp;quot; --overwrite
+oc label node worker-3.ocp42.ssa.mbu.labs.redhat.com &amp;quot;topology.rook.io/rack=rack3&amp;quot; --overwrite‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Install the operator from the web interface
+&lt;img src=&#34;images/image05.png&#34; alt=&#34;OCS Operator&#34;&gt;
+&lt;img src=&#34;images/image06.png&#34; alt=&#34;Subscribe&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Check on the web interface if the operator is &lt;strong&gt;Up to date&lt;/strong&gt;
+&lt;img src=&#34;images/image07.png&#34; alt=&#34;Installed Operators&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And wait for the PODs up&amp;amp;running&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pod -n openshift-storage
+NAME                                  READY   STATUS    RESTARTS   AGE
+noobaa-operator-85d86479fc-n8vp5      1/1     Running   0          106s
+ocs-operator-65cf57b98b-rk48c         1/1     Running   0          106s
+rook-ceph-operator-59d78cf8bd-4zcsz   1/1     Running   0          106s
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create the OCS Cluster Service YAML file&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# cat &amp;lt;&amp;lt;EOF &amp;gt; ocs-cluster-service.yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  manageNodes: false
+  monPVCTemplate:
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: &#39;local-sc&#39;
+      volumeMode: Filesystem
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: &#39;localblock-sc&#39;
+        volumeMode: Block
+    name: ocs-deviceset
+    placement: {}
+    portable: true
+    replica: 3
+    resources: {}
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can notice the &amp;ldquo;&lt;strong&gt;monPVCTemplate&lt;/strong&gt;&amp;rdquo; section in which we define the StorageClass &amp;ldquo;local-sc&amp;rdquo; and in the section &amp;ldquo;&lt;strong&gt;storageDeviceSets&lt;/strong&gt;&amp;rdquo; the different storage sizes and the StorageClass &amp;ldquo;localblock-sc&amp;rdquo; used by OSD volumes.&lt;/p&gt;
+&lt;p&gt;Now we can create the resource&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc create -f ocs-cluster-service.yaml
+storagecluster.ocs.openshift.io/ocs-storagecluster created
+[root@utility ~]#‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;During the creation of the resources, we can see how the PVCs created are bounded with the Local Storage PVs&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pvc -n openshift-storage
+NAME              STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+rook-ceph-mon-a   Bound    local-pv-68faed78   10Gi       RWO            local-sc       13s
+rook-ceph-mon-b   Bound    local-pv-b640422f   10Gi       RWO            local-sc       8s
+rook-ceph-mon-c   Bound    local-pv-780afdd6   10Gi       RWO            local-sc       3s
+[root@utility ~]# oc get pv
+NAME                CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                               STORAGECLASS    REASON   AGE
+local-pv-5c4e718c   100Gi      RWO            Delete           Available                                       localblock-sc            28m
+local-pv-68faed78   10Gi       RWO            Delete           Bound       openshift-storage/rook-ceph-mon-a   local-sc                 34m
+local-pv-6a58375e   100Gi      RWO            Delete           Available                                       localblock-sc            28m
+local-pv-780afdd6   10Gi       RWO            Delete           Bound       openshift-storage/rook-ceph-mon-c   local-sc                 34m
+local-pv-b640422f   10Gi       RWO            Delete           Bound       openshift-storage/rook-ceph-mon-b   local-sc                 33m
+local-pv-d6db37fd   100Gi      RWO            Delete           Available                                       localblock-sc            28m
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And now we can see the OSD PVCs and the PVs bounded&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pvc -n openshift-storage
+NAME                      STATUS   VOLUME              CAPACITY   ACCESS MODES   STORAGECLASS    AGE
+ocs-deviceset-0-0-7j2kj   Bound    local-pv-6a58375e   100Gi      RWO            localblock-sc   3s
+ocs-deviceset-1-0-lmd97   Bound    local-pv-d6db37fd   100Gi      RWO            localblock-sc   3s
+ocs-deviceset-2-0-dnfbd   Bound    local-pv-5c4e718c   100Gi      RWO            localblock-sc   3s‍‍‍‍‍
+[root@utility ~]# oc get pv | grep localblock-sc
+local-pv-5c4e718c                          100Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-2-0-dnfbd   localblock-sc                          31m
+local-pv-6a58375e                          100Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-0-0-7j2kj   localblock-sc                          31m
+local-pv-d6db37fd                          100Gi      RWO            Delete           Bound    openshift-storage/ocs-deviceset-1-0-lmd97   localblock-sc                          31m
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is the first PVC created inside the OCS cluster used by &lt;strong&gt;noobaa&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pvc -n openshift-storage
+NAME                      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+db-noobaa-core-0          Bound    pvc-d8dbb86f-3d83-11ea-ac51-001a4a16017d   50Gi       RWO            ocs-storagecluster-ceph-rbd   72s‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Wait for all the PODs up&amp;amp;running&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pod -n openshift-storage
+NAME                                                              READY   STATUS      RESTARTS   AGE
+csi-cephfsplugin-2qkl8                                            3/3     Running     0          5m31s
+csi-cephfsplugin-4pbvl                                            3/3     Running     0          5m31s
+csi-cephfsplugin-j8w82                                            3/3     Running     0          5m31s
+csi-cephfsplugin-provisioner-647cd6996c-6mw9t                     4/4     Running     0          5m31s
+csi-cephfsplugin-provisioner-647cd6996c-pbrxs                     4/4     Running     0          5m31s
+csi-rbdplugin-9nj85                                               3/3     Running     0          5m31s
+csi-rbdplugin-jmnqz                                               3/3     Running     0          5m31s
+csi-rbdplugin-provisioner-6b8ff67dc4-jk5lm                        4/4     Running     0          5m31s
+csi-rbdplugin-provisioner-6b8ff67dc4-rxjhq                        4/4     Running     0          5m31s
+csi-rbdplugin-vrzjq                                               3/3     Running     0          5m31s
+noobaa-core-0                                                     1/2     Running     0          2m34s
+noobaa-operator-85d86479fc-n8vp5                                  1/1     Running     0          13m
+ocs-operator-65cf57b98b-rk48c                                     0/1     Running     0          13m
+rook-ceph-drain-canary-worker-1.ocp42.ssa.mbu.labs.redhat.w2cqv   1/1     Running     0          2m41s
+rook-ceph-drain-canary-worker-2.ocp42.ssa.mbu.labs.redhat.whv6s   1/1     Running     0          2m40s
+rook-ceph-drain-canary-worker-3.ocp42.ssa.mbu.labs.redhat.ll8gj   1/1     Running     0          2m40s
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-d7d64976d8cm7   1/1     Running     0          2m28s
+rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-864fdf78ppnpm   1/1     Running     0          2m27s
+rook-ceph-mgr-a-5fd6f7578c-wbsb6                                  1/1     Running     0          3m24s
+rook-ceph-mon-a-bffc546c8-vjrfb                                   1/1     Running     0          4m26s
+rook-ceph-mon-b-8499dd679c-6pzm9                                  1/1     Running     0          4m11s
+rook-ceph-mon-c-77cd5dd54-64z52                                   1/1     Running     0          3m46s
+rook-ceph-operator-59d78cf8bd-4zcsz                               1/1     Running     0          13m
+rook-ceph-osd-0-b46fbc7d7-hc2wz                                   1/1     Running     0          2m41s
+rook-ceph-osd-1-648c5dc8d6-prwks                                  1/1     Running     0          2m40s
+rook-ceph-osd-2-546d4d77fb-qb68j                                  1/1     Running     0          2m40s
+rook-ceph-osd-prepare-ocs-deviceset-0-0-7j2kj-s72g4               0/1     Completed   0          2m56s
+rook-ceph-osd-prepare-ocs-deviceset-1-0-lmd97-27chl               0/1     Completed   0          2m56s
+rook-ceph-osd-prepare-ocs-deviceset-2-0-dnfbd-s7z8v               0/1     Completed   0          2m56s
+rook-ceph-rgw-ocs-storagecluster-cephobjectstore-a-d7b4b5b6hnpr   1/1     Running     0          2m12s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Our installation is now complete and OCS fully operative.&lt;/p&gt;
+&lt;p&gt;Now we can browse the &lt;strong&gt;noobaa management console&lt;/strong&gt; (for now it only works in Chrome) and create a new user to test the S3 object storage
+&lt;img src=&#34;images/image08.png&#34; alt=&#34;User Page&#34;&gt;
+&lt;img src=&#34;images/image09.png&#34; alt=&#34;New User&#34;&gt;
+&lt;img src=&#34;images/image10.png&#34; alt=&#34;Permission&#34;&gt;
+&lt;img src=&#34;images/image11.png&#34; alt=&#34;Secret Page&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Get the endpoint for the S3 object server&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get route s3 -o jsonpath=&#39;{.spec.host}&#39; -n openshift-storage
+s3-openshift-storage.apps.ocp42.ssa.mbu.labs.redhat.com‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Test it with your preferred S3 client (I use Cyberduck in my windows desktop which I&amp;rsquo;m using to write this article)
+&lt;img src=&#34;images/image12.png&#34; alt=&#34;Cyberduck Login&#34;&gt;
+&lt;img src=&#34;images/image13.png&#34; alt=&#34;List Buckets&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Create something to check if you can write
+&lt;img src=&#34;images/image14.png&#34; alt=&#34;New file&#34;&gt;&lt;/p&gt;
+&lt;p&gt;It works!&lt;/p&gt;
+&lt;p&gt;Set the &lt;strong&gt;ocs-storagecluster-cephfs&lt;/strong&gt; StorageClass as the default one&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc patch storageclass ocs-storagecluster-cephfs -p &#39;{&amp;quot;metadata&amp;quot;: {&amp;quot;annotations&amp;quot;:{&amp;quot;storageclass.kubernetes.io/is-default-class&amp;quot;:&amp;quot;true&amp;quot;}}}&#39;
+storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched
+[root@utility ~]#‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Test the &lt;strong&gt;ocs-storagecluster-cephfs&lt;/strong&gt; StorageClass adding persistent storage to the registry&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; [root@utility ~]# oc edit configs.imageregistry.operator.openshift.io
+storage:
+  pvc:
+    claim:‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍‍
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Check the PVC created and wait for the new POD up&amp;amp;running&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc get pvc -n openshift-image-registry
+NAME                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                AGE
+image-registry-storage   Bound    pvc-ba4a07c1-3d86-11ea-ad40-001a4a1601e7   100Gi      RWX            ocs-storagecluster-cephfs   12s
+[root@utility ~]# oc get pod -n openshift-image-registry
+NAME                                               READY   STATUS    RESTARTS   AGE
+cluster-image-registry-operator-655fb7779f-pn7ms   2/2     Running   0          36h
+image-registry-5bdf96556-98jbk                     1/1     Running   0          105s
+node-ca-9gbxg                                      1/1     Running   1          35h
+node-ca-fzcrm                                      1/1     Running   0          35h
+node-ca-gr928                                      1/1     Running   1          35h
+node-ca-jkfzf                                      1/1     Running   1          35h
+node-ca-knlcj                                      1/1     Running   0          35h
+node-ca-mb6zh                                      1/1     Running   0          35h
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Test it in a new project &lt;strong&gt;test&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc new-project test
+Now using project &amp;quot;test&amp;quot; on server &amp;quot;https://api.ocp42.ssa.mbu.labs.redhat.com:6443&amp;quot;.
+
+You can add applications to this project with the &#39;new-app&#39; command. For example, try:
+
+    oc new-app django-psql-example
+
+to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+
+    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+
+[root@utility ~]# podman pull alpine
+Trying to pull docker.io/library/alpine...Getting image source signatures
+Copying blob c9b1b535fdd9 doneCopying config e7d92cdc71 doneWriting manifest to image destination
+Storing signaturese7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a
+[root@utility ~]# podman login -u $(oc whoami) -p $(oc whoami -t) $REGISTRY_URL --tls-verify=false
+Login Succeeded!
+[root@utility ~]# podman tag alpine $REGISTRY_URL/test/alpine
+[root@utility ~]# podman push $REGISTRY_URL/test/alpine --tls-verify=false
+Getting image source signatures
+Copying blob 5216338b40a7 done
+Copying config e7d92cdc71 done
+Writing manifest to image destination
+Storing signatures
+[root@utility ~]# oc get is -n test
+NAME     IMAGE REPOSITORY                                                                        TAGS     UPDATED
+alpine   default-route-openshift-image-registry.apps.ocp42.ssa.mbu.labs.redhat.com/test/alpine   latest   3 minutes ago
+[root@utility ~]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The registry works!&lt;/p&gt;
+&lt;h2 id=&#34;other-scenario&#34;&gt;Other Scenario&lt;/h2&gt;
+&lt;p&gt;If your cluster is deployed in vSphere and uses the default &amp;ldquo;&lt;strong&gt;thin&lt;/strong&gt;&amp;rdquo; StorageClass but your datastore isn&amp;rsquo;t big enough, you can start from the OCS installation.
+When it comes to creating the OCS Cluster Service, create a YAML file with your desired sizes and without storageClassName (it will use the default one).
+You can also remove the &amp;ldquo;&lt;strong&gt;monPVCTemplate&lt;/strong&gt;&amp;rdquo; if you are not interested in changing the storage size.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# cat &amp;lt;&amp;lt;EOF &amp;gt; ocs-cluster-service.yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  manageNodes: false
+  monPVCTemplate:
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: &#39;&#39;
+      volumeMode: Filesystem
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: &#39;&#39;
+        volumeMode: Block
+    name: ocs-deviceset
+    placement: {}
+    portable: true
+    replica: 3
+    resources: {}
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;limits-and-requests&#34;&gt;Limits and Requests&lt;/h2&gt;
+&lt;p&gt;Limits and Requests, by default, are set like that&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc describe node worker-1.ocp42.ssa.mbu.labs.redhat.com
+...
+  Namespace           Name                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------           ----                               ------------  ----------  ---------------  -------------  ---
+  openshift-storage   noobaa-core-0                      4 (25%)       4 (25%)     8Gi (12%)        8Gi (12%)      13m
+  openshift-storage   rook-ceph-mgr-a-676d4b4796-54mtk   1 (6%)        1 (6%)      3Gi (4%)         3Gi (4%)       12m
+  openshift-storage   rook-ceph-mon-b-7d7747d8b4-k9txg   1 (6%)        1 (6%)      2Gi (3%)         2Gi (3%)       13m
+  openshift-storage   rook-ceph-osd-1-854847fd4c-482bt   1 (6%)        2 (12%)     4Gi (6%)         8Gi (12%)      12m
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can create our new YAML file to change those settings in the &lt;strong&gt;ocs-storagecluster&lt;/strong&gt; StorageCluster resource&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# cat &amp;lt;&amp;lt;EOF &amp;gt; ocs-cluster-service-modified.yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  resources:
+    mon:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    mgr:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    noobaa-core:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+    noobaa-db:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 1
+        memory: 1Gi
+  manageNodes: false
+  monPVCTemplate:
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: &#39;local-sc&#39;
+      volumeMode: Filesystem
+  storageDeviceSets:
+  - count: 1
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: &#39;localblock-sc&#39;
+        volumeMode: Block
+    name: ocs-deviceset
+    placement: {}
+    portable: true
+    replica: 3
+    resources:
+      limits:
+        cpu: 1
+        memory: 4Gi
+      requests:
+        cpu: 1
+        memory: 4Gi
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And apply&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc apply -f ocs-cluster-service-modified.yaml
+Warning: oc apply should be used on resource created by either oc create --save-config or oc apply
+storagecluster.ocs.openshift.io/ocs-storagecluster configured
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We have to wait for the operator which reads the new configs and applies them&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[root@utility ~]# oc describe node worker-1.ocp42.ssa.mbu.labs.redhat.com
+...
+  Namespace           Name                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  AGE
+  ---------           ----                               ------------  ----------  ---------------  -------------  ---
+  openshift-storage   noobaa-core-0                      2 (12%)       2 (12%)     2Gi (3%)         2Gi (3%)       23s
+  openshift-storage   rook-ceph-mgr-a-54f87f84fb-pm4rn   1 (6%)        1 (6%)      1Gi (1%)         1Gi (1%)       56s
+  openshift-storage   rook-ceph-mon-b-854f549cd4-bgdb6   1 (6%)        1 (6%)      1Gi (1%)         1Gi (1%)       46s
+  openshift-storage   rook-ceph-osd-1-ff56d545c-p7hvn    1 (6%)        1 (6%)      4Gi (6%)         4Gi (6%)       50s
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And now we have our PODs with the new configurations applied.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The OSD PODs won&amp;rsquo;t start if you choose too low values.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Sections:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;mon&lt;/strong&gt; for &lt;strong&gt;rook-ceph-mon&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;mgr&lt;/strong&gt; for &lt;strong&gt;rook-ceph-mgr&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;noobaa-core&lt;/strong&gt; and &lt;strong&gt;noobaa-db&lt;/strong&gt; for the 2 containers in the pod &lt;strong&gt;noobaa-core-0&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;mds&lt;/strong&gt; for &lt;strong&gt;rook-ceph-mds-ocs-storagecluster-cephfilesystem&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;rgw&lt;/strong&gt; for &lt;strong&gt;rook-ceph-rgw-ocs-storagecluster-cephobjectstore&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;the &lt;strong&gt;resources&lt;/strong&gt; section in the end for &lt;strong&gt;rook-ceph-osd&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;rgw and mds sections work only the first time we create the resource.&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;---
+spec:
+  resources:
+    mds:
+      limits:
+        cpu: 2
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 4Gi
+    rgw:
+      limits:
+        cpu: 1
+        memory: 2Gi
+      requests:
+        cpu: 1
+        memory: 2Gi
+---
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
+&lt;p&gt;Now you can enjoy your brand-new OCS 4.2 in OCP 4.2.x&lt;br&gt;
+Things changed if you think about OCS 3.x, for example, the use of the PVCs instead of using directly the disks attached and for now, there are a lot of limitations for sustainability and supportability reasons.&lt;br&gt;
+We will wait for a fully supported installation for these scenarios.&lt;/p&gt;
+&lt;h2 id=&#34;updates&#34;&gt;UPDATES&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;The cluster used to write this article has been updated from 4.2.14 to 4.2.16 and then from 4.2.16 to 4.3.0.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The current OCS setup is still working
+&lt;img src=&#34;images/image15.png&#34; alt=&#34;Upgrade&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Added Requests and Limits configurations.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

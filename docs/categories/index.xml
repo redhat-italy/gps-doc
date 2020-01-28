@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories | GPS Italy Documentation</title>
+    <link>https://redhat-italy.github.io/gps-doc/categories/</link>
+      <atom:link href="https://redhat-italy.github.io/gps-doc/categories/index.xml" rel="self" type="application/rss+xml" />
+    <description>Categories</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><lastBuildDate>Tue, 28 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>img/map[gravatar:%!s(bool=true) shape:circle]</url>
+      <title>Categories</title>
+      <link>https://redhat-italy.github.io/gps-doc/categories/</link>
+    </image>
+    
+    <item>
+      <title>ocs</title>
+      <link>https://redhat-italy.github.io/gps-doc/categories/ocs/</link>
+      <pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>https://redhat-italy.github.io/gps-doc/categories/ocs/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
